@@ -3,14 +3,15 @@ from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 class User(AbstractUser):
-    full_name = models.CharField(max_length=300)
+    full_name = models.CharField(max_length=300,null=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=300)
-    image = models.ImageField()
-    phone_number = models.IntegerField()
+    image = models.ImageField(null=True)
+    username =  models.CharField(max_length=300,default='username')
+    phone_number = models.IntegerField(null=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']
 
 class ProductType(models.Model):
     name = models.CharField(max_length=300)
@@ -18,7 +19,7 @@ class ProductType(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=300)
     quantity = models.IntegerField()
-    department = models.ManyToManyField('Department',null=True)
+    department = models.ManyToManyField('Department',null=True,blank=True)
     type = models.ForeignKey(ProductType,on_delete=models.SET_NULL,null=True)
 
 class Purchase(models.Model):
