@@ -5,17 +5,23 @@ from rest_framework.generics import GenericAPIView
 from .serializers import ProductTypeSerializer,ProductSerializer,UserSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view,permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import DjangoModelPermissions
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
+from django.contrib.auth.hashers import make_password
 
 # Create your views here.
 
 @api_view(['POST'])
+@permission_classes([])
 def register(request):
+    password = request.data.get('password')
+    hash_password = make_password(password)
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        a = serializer.save()
+        a.password = hash_password
+        a.save()
         return Response('Registered succesfully')
     else:
         return Response(serializer.errors)
@@ -39,6 +45,7 @@ class ProductTypeApiView(ModelViewSet):
 class ProductApiView(GenericAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [DjangoModelPermissions]
 
     def get(self,request):
         product_objs = Product.objects.all()
